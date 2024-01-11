@@ -89,7 +89,9 @@ Copy an example image into the created example container image repository:
 # see https://hub.docker.com/repository/docker/ruilopes/example-docker-buildx-go
 # see https://github.com/rgl/example-docker-buildx-go
 source_image="docker.io/ruilopes/example-docker-buildx-go:v1.10.0"
-image="$(terraform output -raw example_repository_url):v1.10.0"
+image_tag="${source_image##*:}"
+image="$(terraform output -json repositories \
+  | jq -r '.[] | select(endswith("/example"))'):$image_tag"
 crane copy \
   --allow-nondistributable-artifacts \
   "$source_image" \
