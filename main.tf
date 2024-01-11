@@ -15,10 +15,20 @@ provider "aws" {
   region = var.region
   default_tags {
     tags = {
-      Project     = "aws-ecr-example"
-      Environment = "test"
+      Project     = var.project
+      Environment = var.environment
     }
   }
+}
+
+variable "project" {
+  type    = string
+  default = "aws-ecr-example"
+}
+
+variable "environment" {
+  type    = string
+  default = "test"
 }
 
 # get the available locations with: aws ec2 describe-regions | jq -r '.Regions[].RegionName' | sort
