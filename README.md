@@ -2,7 +2,7 @@
 
 [![Lint](https://github.com/rgl/terraform-aws-ecr-example/actions/workflows/lint.yml/badge.svg)](https://github.com/rgl/terraform-aws-ecr-example/actions/workflows/lint.yml)
 
-This creates an example private container image repository hosted in the [AWS Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) of your AWS Account using a terraform program.
+This creates private container image repositories hosted in the [AWS Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) of your AWS Account using a terraform program.
 
 # Usage (on a Ubuntu Desktop)
 
@@ -83,7 +83,7 @@ aws ecr get-login-password \
 
 **NB** This saves the credentials in the `~/.docker/config.json` local file.
 
-Copy an example image into the created container image repository:
+Copy an example image into the created example container image repository:
 
 ```bash
 # see https://hub.docker.com/repository/docker/ruilopes/example-docker-buildx-go
