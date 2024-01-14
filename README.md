@@ -13,7 +13,7 @@ Install the dependencies:
 * [Crane](https://github.com/google/go-containerregistry/releases).
 * [Docker](https://docs.docker.com/engine/install/).
 
-Set the account credentials using SSO:
+Set the AWS Account credentials using SSO:
 
 ```bash
 # set the account credentials.
@@ -83,23 +83,14 @@ aws ecr get-login-password \
 
 **NB** This saves the credentials in the `~/.docker/config.json` local file.
 
-Copy an example image into the created example container image repository:
+Inspect the created example container image:
 
 ```bash
-# see https://hub.docker.com/repository/docker/ruilopes/example-docker-buildx-go
-# see https://github.com/rgl/example-docker-buildx-go
-source_image="docker.io/ruilopes/example-docker-buildx-go:v1.10.0"
-image_tag="${source_image##*:}"
-image="$(terraform output -json repositories \
-  | jq -r '.[] | select(endswith("/example"))'):$image_tag"
-crane copy \
-  --allow-nondistributable-artifacts \
-  "$source_image" \
-  "$image"
+image="$(terraform output -json images | jq -r .example)"
 crane manifest "$image" | jq .
 ```
 
-Download the copied example container image from the created container image
+Download the created example container image from the created container image
 repository, and execute it locally:
 
 ```bash
@@ -117,6 +108,21 @@ Log out the container registry:
 ```bash
 docker logout \
   "$(terraform output -raw registry_domain)"
+```
+
+Delete the example image resource:
+
+```bash
+terraform destroy -target='terraform_data.ecr_image["example"]'
+```
+
+At the ECR AWS Management Console, verify that the example image no longer
+exists (actually, it's the image index/tag that no longer exists).
+
+Do an `terraform apply` to verify that it recreates the example image:
+
+```bash
+make terraform-apply
 ```
 
 Destroy the example:
