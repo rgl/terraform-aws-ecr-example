@@ -4,6 +4,11 @@
 
 This creates private container image repositories hosted in the [AWS Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) of your AWS Account using a terraform program.
 
+For equivalent examples see:
+
+* [pulumi (aws classic provider)](https://github.com/rgl/pulumi-typescript-aws-classic-ecr-example)
+* [pulumi (aws native provider)](https://github.com/rgl/pulumi-typescript-aws-native-ecr-example)
+
 # Usage (on a Ubuntu Desktop)
 
 Install the dependencies:
