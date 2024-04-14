@@ -1,12 +1,12 @@
 # see https://github.com/hashicorp/terraform
 terraform {
-  required_version = "1.7.2"
+  required_version = "1.8.0"
   required_providers {
     # see https://registry.terraform.io/providers/hashicorp/aws
     # see https://github.com/hashicorp/terraform-provider-aws
     aws = {
       source  = "hashicorp/aws"
-      version = "5.35.0"
+      version = "5.45.0"
     }
   }
 }
@@ -70,7 +70,7 @@ output "images" {
 # see https://github.com/terraform-aws-modules/terraform-aws-ecr
 module "ecr_repository" {
   source  = "terraform-aws-modules/ecr/aws"
-  version = "1.6.0"
+  version = "2.2.0"
 
   for_each = local.images
 
