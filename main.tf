@@ -38,9 +38,23 @@ variable "region" {
 }
 
 locals {
-  images = {
-    example    = "docker.io/ruilopes/example-docker-buildx-go:v1.10.0"
-    hello-etcd = "ghcr.io/rgl/hello-etcd:0.0.1"
+  # images to copy into the aws account ecr registry as:
+  #   ${project}-${environment}/${source_images.key}:${source_images.value.tag}
+  source_images = {
+    # see https://hub.docker.com/repository/docker/ruilopes/example-docker-buildx-go
+    # see https://github.com/rgl/example-docker-buildx-go
+    example = {
+      name = "docker.io/ruilopes/example-docker-buildx-go"
+      # renovate: datasource=docker depName=ruilopes/example-docker-buildx-go
+      tag = "v1.11.0"
+    }
+    # see https://github.com/rgl/hello-etcd/pkgs/container/hello-etcd
+    # see https://github.com/rgl/hello-etcd
+    hello-etcd = {
+      name = "ghcr.io/rgl/hello-etcd"
+      # renovate: datasource=docker depName=rgl/hello-etcd registryUrl=https://ghcr.io
+      tag = "0.0.1"
+    }
   }
 }
 
@@ -61,7 +75,7 @@ output "registry_domain" {
 output "images" {
   # e.g. 123456.dkr.ecr.eu-west-1.amazonaws.com/aws-ecr-example/example:1.2.3
   value = {
-    for key, value in local.images : key => "${module.ecr_repository[key].repository_url}:${regex(":(?P<tag>[^:]+)$", value)["tag"]}"
+    for key, value in local.source_images : key => "${module.ecr_repository[key].repository_url}:${value.tag}"
   }
 }
 
@@ -72,7 +86,7 @@ module "ecr_repository" {
   source  = "terraform-aws-modules/ecr/aws"
   version = "2.2.0"
 
-  for_each = local.images
+  for_each = local.source_images
 
   repository_name               = "${var.project}/${each.key}"
   repository_type               = "private"
@@ -83,10 +97,10 @@ module "ecr_repository" {
 
 # see https://developer.hashicorp.com/terraform/language/resources/terraform-data
 resource "terraform_data" "ecr_image" {
-  for_each = local.images
+  for_each = local.source_images
 
   triggers_replace = {
-    source_image  = each.value
+    source_image  = "${each.value.name}:${each.value.tag}"
     target_image  = module.ecr_repository[each.key].repository_url
     target_region = var.region
   }
@@ -95,7 +109,7 @@ resource "terraform_data" "ecr_image" {
     when = create
     environment = {
       ECR_IMAGE_COMMAND       = "copy"
-      ECR_IMAGE_SOURCE_IMAGE  = each.value
+      ECR_IMAGE_SOURCE_IMAGE  = "${each.value.name}:${each.value.tag}"
       ECR_IMAGE_TARGET_IMAGE  = module.ecr_repository[each.key].repository_url
       ECR_IMAGE_TARGET_REGION = var.region
     }
