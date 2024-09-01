@@ -3,6 +3,6 @@ terraform.tfstate*
 terraform-graph.svg
 .vagrant/
 tmp/
-secrets.*
+secrets*
 *.tmp.png
 *.log
